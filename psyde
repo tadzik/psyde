@@ -61,6 +61,11 @@ for dir('posts', :test( / '.markdown' $ / ))>>.basename -> $markdown_filename {
             my ($key, $value) = $line.split(': ', 2);
             %info{$key} = $value;
         }
+        my $missing_meta = set(qw/title author created/) (-) %info.keys;
+        if $missing_meta {
+            die "$markdown_filename is missing required metadata: "
+                ~ $missing_meta.keys.join(", ");
+        }
         %info<created> ~~ /(\d\d\d\d) '-' (\d\d) '-' (\d\d)/;
         given Date.new("$0-$1-$2") {
             die "Won't publish $markdown_filename which claims it was created $_"
